@@ -1,6 +1,6 @@
 import { useFocusEffect } from "@react-navigation/core";
 import formStyle from "../../styles/styles.forms";
-import React, {useState} from "react";
+import React, { useState } from "react";
 import {
   ImageBackground,
   ScrollView,
@@ -13,9 +13,12 @@ import {
 
 import { FontAwesome5 } from "@expo/vector-icons";
 import AppModal from "./AppModal";
-const MiCuenta = (props) => {
 
-    const [modalImg, setModalImg] = useState(false);
+import * as ImagePicker from "expo-image-picker";
+import * as Permissions from "expo-permissions";
+
+const MiCuenta = (props) => {
+  const [modalImg, setModalImg] = useState(false);
   //Titulo del screen en foco
   useFocusEffect(() => {
     props.navigation.dangerouslyGetParent().setOptions({
@@ -23,12 +26,52 @@ const MiCuenta = (props) => {
     });
   });
 
+  const tomarImagenGaleria = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status === "granted") {
+      const imgGaleria = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [16, 9],
+        quality: 1,
+      });
+
+      console.log(imgGaleria);
+    }
+  };
+
+  const tomarFotoCamara = async () => {
+    const permisoCamara = await Permissions.askAsync(Permissions.CAMERA);
+
+    const permisoGaleria = await Permissions.askAsync(
+      Permissions.MEDIA_LIBRARY
+    );
+    if (
+      permisoCamara.status === "granted" &&
+      permisoGaleria.status === "granted"
+    ) {
+      const imgCamara = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 4],
+        quality: 1,
+      });
+
+      if (!imgCamara.cancelled) {
+        modalImg(true);
+      } else {
+        Alert.alert("ERROR", "Toma una foto para continuar");
+      }
+    } else {
+      Alert.alert("ERROR", "Faltan permisos para continuar");
+    }
+  };
+
   return (
     <View style={formStyle.contenedor}>
       {modalImg ? (
         <AppModal
           show={modalImg}
-          layerBgColor='#333'
           layerBgOpacity={0.5}
           modalBgColor='#fff'
           modalOpacity={1}
@@ -36,35 +79,47 @@ const MiCuenta = (props) => {
             <View>
               <Text
                 style={{
-                  alignSelf: 'center',
-                  marginVertical: 10,
-                  fontSize: 20,
-                  fontWeight: '500',
+                  alignSelf: "center",
+                  marginVertical: 1,
+                  fontSize: 18,
+                  fontWeight: "500",
                 }}
               >
-                <FontAwesome5 name='camera-retro' size={20} /> Actualizar imagen
-                de perfíl
+                <FontAwesome5 name='camera' size={20} /> CAMBIAR IMAGEN
               </Text>
-
-              <Button title='Tomar foto' />
-
               <View
                 style={{
-                  marginVertical: 5,
+                  marginVertical: 12,
                 }}
               />
 
-              <Button title='Galería' onPress={tomarImagenGaleria} />
+              <Button
+                color='#1429A3'
+                title='Tomar foto'
+                onPress={tomarFotoCamara}
+              />
 
               <View
                 style={{
-                  marginVertical: 5,
+                  marginVertical: 8,
+                }}
+              />
+
+              <Button
+                color='#1429A3'
+                title='Galería'
+                onPress={tomarImagenGaleria}
+              />
+
+              <View
+                style={{
+                  marginVertical: 8,
                 }}
               />
 
               <Button
                 title='Cancelar'
-                color='red'
+                color='#C70039'
                 onPress={() => setModalImg(false)}
               />
             </View>
@@ -74,19 +129,19 @@ const MiCuenta = (props) => {
       <ScrollView>
         <TouchableOpacity onPress={() => setModalImg(true)}>
           <ImageBackground
-            source={require('./../../../assets/images/determinado.png')}
+            source={require("./../../../assets/images/determinado.png")}
             style={formStyle.imagen}
           >
             <Text
               style={{
-                backgroundColor: '#000',
-                color: '#fff',
-                width: '100%',
+                backgroundColor: "#000",
+                color: "#fff",
+                width: "100%",
                 paddingBottom: 20,
                 paddingTop: 10,
                 opacity: 0.8,
-                textAlign: 'center',
-                position: 'absolute',
+                textAlign: "center",
+                position: "absolute",
                 bottom: 1,
               }}
             >
@@ -96,15 +151,15 @@ const MiCuenta = (props) => {
           </ImageBackground>
         </TouchableOpacity>
 
-        <TextInput style={formStyle.input} value={'Verónica'} />
-        <TextInput style={formStyle.input} value={'Lorenzo'} />
-        <TextInput style={formStyle.input} value={'Alavez'} />
+        <TextInput style={formStyle.input} value={"Verónica"} />
+        <TextInput style={formStyle.input} value={"Lorenzo"} />
+        <TextInput style={formStyle.input} value={"Alavez"} />
         <TextInput
           style={formStyle.input}
-          value={'veronicalorenzo1999@gmail.com'}
+          value={"veronicalorenzo1999@gmail.com"}
         />
-        <TextInput style={formStyle.input} value={'4424695054'} />
-        <TextInput style={formStyle.input} value={'veronica12345'} />
+        <TextInput style={formStyle.input} value={"4424695054"} />
+        <TextInput style={formStyle.input} value={"veronica12345"} />
         <TouchableOpacity style={formStyle.estiloBoton}>
           <Text style={formStyle.estiloBotonText}>Guardar cambios</Text>
         </TouchableOpacity>
