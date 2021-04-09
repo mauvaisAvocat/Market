@@ -1,16 +1,20 @@
-import { useFocusEffect } from "@react-navigation/core";
-import React from "react";
-import { Text, View, Button } from "react-native";
-import stylesForms from "./../styles/styles.forms";
-import * as Permissions from "expo-permissions";
-import * as ImagePicker from "expo-image-picker";
+import { useFocusEffect } from '@react-navigation/core';
+import React, { useState } from 'react';
+import { Text, View, Button } from 'react-native';
+import stylesForms from './../styles/styles.forms';
+import * as Permissions from 'expo-permissions';
+import * as ImagePicker from 'expo-image-picker';
+import { BarCodeScanner } from 'expo-barcode-scanner';
+import Prueba from './Prueba';
 
 const NuevaVenta = (props) => {
   useFocusEffect(() => {
     props.navigation.dangerouslyGetParent().setOptions({
-      title: "Nueva Venta",
+      title: 'Nueva Venta',
     });
   });
+    
+    const [scanner, setScanner] = useState(false);
 
   const tomarFotoCamara = async () => {
     const permisoCamara = await Permissions.askAsync(Permissions.CAMERA);
@@ -19,8 +23,8 @@ const NuevaVenta = (props) => {
       Permissions.MEDIA_LIBRARY
     );
     if (
-      permisoCamara.status === "granted" &&
-      permisoGaleria.status === "granted"
+      permisoCamara.status === 'granted' &&
+      permisoGaleria.status === 'granted'
     ) {
       const imgCamara = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -29,7 +33,7 @@ const NuevaVenta = (props) => {
         quality: 1,
       });
     } else {
-      Alert.alert("ERROR", "Faltan permisos para continuar");
+      Alert.alert('ERROR', 'Faltan permisos para continuar');
     }
   };
 
@@ -39,23 +43,33 @@ const NuevaVenta = (props) => {
         ...stylesForms.contenedor,
         marginVertical: 20,
         paddingHorizontal: 20,
-        justifyContent: "center",
+        justifyContent: 'center',
       }}
     >
       <Text
         style={{
-          fontWeight: "500",
+          fontWeight: '500',
           fontSize: 20,
-          textAlign: "center",
-          alignSelf: "center",
+          textAlign: 'center',
+          alignSelf: 'center',
           marginVertical: 20,
-          color: "#fff",
-        }}
+          color: '#fff',
+              }}
       >
-        Comenzar una venta
+              Comenzar una venta
       </Text>
+    
+    <View style={{ flex: 1, display: scanner ? 'flex' : 'none' }}>
+        <Prueba />
+    </View>
 
-      <Button title='Nueva venta' color='#C70039' onPress={tomarFotoCamara} />
+      <Button
+        title='Nueva venta'
+        color='#C70039'
+        onPress={() => {
+            setScanner(true);
+        }}
+      />
     </View>
   );
 };
