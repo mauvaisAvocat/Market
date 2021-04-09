@@ -5,6 +5,7 @@ import {
   ImageBackground,
   ScrollView,
   Text,
+  Alert,
   TextInput,
   TouchableOpacity,
   View,
@@ -19,6 +20,8 @@ import * as Permissions from "expo-permissions";
 
 const MiCuenta = (props) => {
   const [modalImg, setModalImg] = useState(false);
+  const [docUsuario, setDocUsuario] = useState({});
+
   //Titulo del screen en foco
   useFocusEffect(() => {
     props.navigation.dangerouslyGetParent().setOptions({
@@ -32,11 +35,34 @@ const MiCuenta = (props) => {
       const imgGaleria = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [16, 9],
+        aspect: [4, 4],
         quality: 1,
       });
+      if (!imgGaleria.cancelled) {
+        setDocUsuario({
+          ...docUsuario,
+          ["avatar"]: imgGaleria.uri,
+        });
 
-      console.log(imgGaleria);
+        setModalImg(false);
+
+        const blob = await (await fetch(imgGaleria.uri)).blob();
+
+        /**
+         * Creamos un archivo de tipo imagen para
+         * guardar el contenido blob e indicamos el nombre
+         * del archivo y sus poropiedades
+         *
+         * File ([blob], nombre, propiedades)
+         */
+        const file = new File([blob], `${docUsuario.id}.jpg`, {
+          type: "image/jpeg",
+        });
+
+        blob.close();
+      } else {
+        Alert.alert("ERROR", "Selecciona una imagen de tu galería");
+      }
     }
   };
 
@@ -57,8 +83,14 @@ const MiCuenta = (props) => {
         quality: 1,
       });
 
+      console.log(imgCamara);
       if (!imgCamara.cancelled) {
-        modalImg(true);
+        setDocUsuario({
+          ...docUsuario,
+          ["avatar"]: imgCamara.uri,
+        });
+
+        setModalImg(false);
       } else {
         Alert.alert("ERROR", "Toma una foto para continuar");
       }
@@ -129,7 +161,11 @@ const MiCuenta = (props) => {
       <ScrollView>
         <TouchableOpacity onPress={() => setModalImg(true)}>
           <ImageBackground
-            source={require("./../../../assets/images/determinado.png")}
+            source={
+              typeof docUsuario.avatar !== "undefined"
+                ? { uri: docUsuario.avatar }
+                : require("./../../../assets/images/determinado.png")
+            }
             style={formStyle.imagen}
           >
             <Text
