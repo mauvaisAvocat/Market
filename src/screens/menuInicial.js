@@ -2,6 +2,7 @@ import React, { useEffect, useLayoutEffect } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import MiCuenta from './private/miCuenta';
 import NuevaVenta from './nuevaVenta';
+import Lugar from './Lugar';
 import { Entypo, AntDesign } from '@expo/vector-icons';
 import { Alert, BackHandler, TouchableOpacity } from 'react-native';
 import { DrawerActions } from '@react-navigation/core';
@@ -81,6 +82,7 @@ const MenuInicial = (props) => {
     <Drawer.Navigator>
       <Drawer.Screen name='Mi Cuenta' component={MiCuenta} />
       <Drawer.Screen name='Nueva Venta' component={NuevaVenta} />
+      <Drawer.Screen name='Lugar' component={Lugar} />
     </Drawer.Navigator>
   );
 };

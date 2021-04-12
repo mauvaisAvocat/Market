@@ -62,14 +62,7 @@ const NuevaVenta = (props) => {
     <View style={{ flex: 1, display: scanner ? 'flex' : 'none' }}>
         <Prueba />
     </View>
-
-      <Button
-        title='Nueva venta'
-        color='#C70039'
-        onPress={() => {
-            setScanner(true);
-        }}
-      />
+    
     </View>
   );
 };
