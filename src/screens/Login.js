@@ -21,6 +21,21 @@ const Login = (props) => {
   const [user, setUser] = useState([]);
   
 
+  const loggearse = async () => {
+      try {
+          const res = await axios.post('https://www.market-app.xyz/api/v1/login', {
+              'email': username,              
+              'password': password,
+          });
+          const json = await res.data;
+          setUser({json});
+          console.log(json);
+
+      } catch (e) {
+          console.log(e);
+      }
+  };
+    
   const validaLogin = async () => {
     if (username.length < 10) {
       Alert.alert("ERROR", "Correo incorrecto", [
@@ -43,16 +58,7 @@ const Login = (props) => {
 
       return;
     }
-    
-    const res = await axios.post('https://www.market-app.xyz/api/v1/login', {
-          'email': username,
-          'password': password,
-    });
-      const json = await res.data;
-      const usuario = [];
-      usuario.push(json);
-      setUser(usuario);
-      console.log(user);
+    loggearse();
 
     setBtnVisible(false);
     setAiVisible(true);
