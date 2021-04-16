@@ -17,15 +17,20 @@ const Prueba = (props) => {
   }, []);
   
 
-  const handleBarCodeScanned =  ({ type, data }) => {
+  const handleBarCodeScanned = async ({ type, data }) => {
       setScanned(true);
       console.log(`https://www.market-app.xyz/api/v1/products?barcode=${data}`);
-      const res =  axios.get(`https://www.market-app.xyz/api/v1/products?barcode=${data}`);
-      console.log(res);
+      const res = await axios.get(`https://www.market-app.xyz/api/v1/products?barcode=${data}`);
+      const json = await res.data;
+      const producto = [];
+      producto.push(json);
+      setProduct(producto);
+      console.log(product);
+      
       //alert(`Bar code with type ${type} and data ${data} has been scanned!`);
       Alert.alert('¡Hey!', `Bar code: ${data}
-Producto:
-Precio:`, [
+Producto: ${product.name}
+Precio: ${product.price}`, [
                                 {
                                     text: 'Cancelar',
                                     onPress: () => {

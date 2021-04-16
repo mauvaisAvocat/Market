@@ -13,11 +13,12 @@ import { AntDesign } from "@expo/vector-icons";
 import axios from 'axios';
 
 const Login = (props) => {
-  const [username, setUsername] = useState("veronicalorenzo1999@gmail.com");
-  const [password, setPassword] = useState("veronica12345");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [btnVisible, setBtnVisible] = useState(true);
   const [aiVisible, setAiVisible] = useState(false);
   const [tiEnabled, setTiEnabled] = useState(true);
+  const [user, setUser] = useState([]);
   
 
   const validaLogin = async () => {
@@ -43,7 +44,15 @@ const Login = (props) => {
       return;
     }
     
-    await axios.post();
+    const res = await axios.post('https://www.market-app.xyz/api/v1/login', {
+          'email': username,
+          'password': password,
+    });
+      const json = await res.data;
+      const usuario = [];
+      usuario.push(json);
+      setUser(usuario);
+      console.log(user);
 
     setBtnVisible(false);
     setAiVisible(true);
