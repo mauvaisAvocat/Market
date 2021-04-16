@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import formStyle from "../styles/styles.forms";
 import { AntDesign } from "@expo/vector-icons";
+import axios from 'axios';
 
 const Login = (props) => {
   const [username, setUsername] = useState("veronicalorenzo1999@gmail.com");
@@ -17,8 +18,9 @@ const Login = (props) => {
   const [btnVisible, setBtnVisible] = useState(true);
   const [aiVisible, setAiVisible] = useState(false);
   const [tiEnabled, setTiEnabled] = useState(true);
+  
 
-  const validaLogin = () => {
+  const validaLogin = async () => {
     if (username.length < 10) {
       Alert.alert("ERROR", "Correo incorrecto", [
         {
@@ -40,6 +42,8 @@ const Login = (props) => {
 
       return;
     }
+    
+    await axios.post();
 
     setBtnVisible(false);
     setAiVisible(true);

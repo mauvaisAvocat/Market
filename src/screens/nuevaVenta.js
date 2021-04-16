@@ -14,7 +14,7 @@ const NuevaVenta = (props) => {
     });
   });
     
-    const [scanner, setScanner] = useState(false);
+    const [scanner, setScanner] = useState(true);
 
   const tomarFotoCamara = async () => {
     const permisoCamara = await Permissions.askAsync(Permissions.CAMERA);

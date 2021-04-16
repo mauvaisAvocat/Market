@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Button } from 'react-native';
+import { Text, View, StyleSheet, Button, Alert } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import styles from '../styles/styles.forms';
+import axios from 'axios';
 
 const Prueba = (props) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
+  const [product, setProduct] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -13,10 +15,38 @@ const Prueba = (props) => {
       setHasPermission(status === 'granted');
     })();
   }, []);
+  
 
-  const handleBarCodeScanned = ({ type, data }) => {
-    setScanned(true);
-      alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+  const handleBarCodeScanned =  ({ type, data }) => {
+      setScanned(true);
+      console.log(`https://www.market-app.xyz/api/v1/products?barcode=${data}`);
+      const res =  axios.get(`https://www.market-app.xyz/api/v1/products?barcode=${data}`);
+      console.log(res);
+      //alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+      Alert.alert('¡Hey!', `Bar code: ${data}
+Producto:
+Precio:`, [
+                                {
+                                    text: 'Cancelar',
+                                    onPress: () => {
+                                        if(scanned) {
+                                            setScanned(false);
+                                        }
+                                    }
+                                },
+                                {
+                                    text: 'Agregar a lista',
+                                    onPress: () => {
+                                        if (!scanned) {
+                                            setScanned(true);
+                                        }
+                                    }
+                                },
+                ],
+                            {
+                                cancelable: false,
+                            }
+                            );
       console.log(data);
   };
     
@@ -33,7 +63,7 @@ const Prueba = (props) => {
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={StyleSheet.absoluteFillObject}
       />
-      {scanned && <Button title={'Agregar a la lista'} color='#1429A3' onPress={() => setScanned(false)} />}
+      
     </View>
   );
 }

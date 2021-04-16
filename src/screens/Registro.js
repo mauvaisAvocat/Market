@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, ImageBackground, ScrollView, ActivityIndicator, Button, Alert } from 'react-native';
 import Login from './Login';
+import axios from 'axios';
 
 const Registro = (props) => {
 
@@ -111,6 +112,11 @@ const Registro = (props) => {
                 );
                 return;
             }
+        await axios.post('https://www.market-app.xyz/api/v1/register', {
+            'name': nombre,
+            'email': email,
+            'password': contrasena,
+        });
         setAiVisible(true);
         setBtnVisible(false);
         setTiEnabled(false);
