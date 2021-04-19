@@ -49,9 +49,12 @@ const Login = (props) => {
             'password': password,
         });
         const json = await res.data;
-        setUser({ json });
-        console.log(user.access_token);
+        const datos = JSON.parse(JSON.stringify(json));
+
+        setUser(datos);
+        console.log(user);
         console.log(res.status);
+        console.log(json);
         console.log(username);
         if (res.status === 200) {
             Alert.alert('Hey!', `Bienvenido ${username}`, [
@@ -66,7 +69,7 @@ const Login = (props) => {
                             setAiVisible(false);
                             setTiEnabled(true);
                             //Direccionar a Home
-                            props.navigation.navigate("MenuInicial");
+                            props.navigation.navigate("MenuInicial", { datosUsuario: json });
                         }, 350);
                     },
                 },

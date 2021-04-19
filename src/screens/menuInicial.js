@@ -7,10 +7,15 @@ import Catalogo from './private/Catalogo';
 import { Entypo, AntDesign } from '@expo/vector-icons';
 import { Alert, BackHandler, TouchableOpacity } from 'react-native';
 import { DrawerActions } from '@react-navigation/core';
+import axios from 'axios';
 
 const Drawer = createDrawerNavigator();
 
+
 const MenuInicial = (props) => {
+
+  const userData = props.route.params.datosUsuario;
+
   const backAction = () => {
     Alert.alert(
       '¡Espera!',
@@ -18,7 +23,21 @@ const MenuInicial = (props) => {
       [
         {
           text: 'Cancelar',
-          onPress: null,
+          onPress: async () => {
+              try {
+                  const res = await axios.post('https://www.market-app.xyz/api/v1/logout', {
+                  }, {
+                      headers: {
+                          Authorization: 'Bearer ' + userData.access_token
+                      }
+                  });
+                  console.log(res.status);
+                  console.log(res.data);
+                  console.log(userData);
+              } catch (e) {
+                  console.log(e);
+              }
+          },
           style: 'cancel',
         },
         {
