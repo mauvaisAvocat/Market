@@ -7,7 +7,8 @@ import axios from 'axios';
 const Prueba = (props) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
-  const [product, setProduct] = useState([]);
+  const [products, setProducts] = useState([]);
+    let arraySells = [];
 
   useEffect(() => {
     (async () => {
@@ -17,30 +18,47 @@ const Prueba = (props) => {
   }, []);
   
 
-  const handleBarCodeScanned =  ({ type, data }) => {
+  const handleBarCodeScanned = async ({ type, data }) => {
       setScanned(true);
       console.log(`https://www.market-app.xyz/api/v1/products?barcode=${data}`);
-      const res =  axios.get(`https://www.market-app.xyz/api/v1/products?barcode=${data}`);
-      console.log(res);
+      const res = await axios.get(`https://www.market-app.xyz/api/v1/products?barcode=${data}`);
+      const json = await res.data;
       //alert(`Bar code with type ${type} and data ${data} has been scanned!`);
       Alert.alert('¡Hey!', `Bar code: ${data}
-Producto:
-Precio:`, [
+Producto: ${json.name}
+Precio: ${json.price}`, [
                                 {
                                     text: 'Cancelar',
                                     onPress: () => {
-                                        if(scanned) {
-                                            setScanned(false);
-                                        }
+                                        
                                     }
                                 },
                                 {
                                     text: 'Agregar a lista',
                                     onPress: () => {
-                                        if (!scanned) {
-                                            setScanned(true);
-                                        }
+                                        arraySells.push({
+                                            'quant': 1,
+                                            'product_id': json.id,
+                                    });
+                                    setProducts(arraySells);
+                                    console.log(json);
+                                    console.log(arraySells[0]);
                                     }
+                                },
+                                {
+                                    text: 'Finalizar venta',
+                                    onPress: async () => {
+                                        try {
+                                            const res = await axios.post('https://www.market-app.xyz/api/v1/sell', {
+                                                'sells': products,
+                                                'relation_id': 1,
+                                            });
+                                            console.log(res.data);
+                                            console.log(products[0]);
+                                        } catch (e) {
+                                            console.log(e);
+                                        }
+                                    },
                                 },
                 ],
                             {

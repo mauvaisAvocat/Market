@@ -3,13 +3,20 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import MiCuenta from './private/miCuenta';
 import NuevaVenta from './nuevaVenta';
 import Lugar from './Lugar';
+import Catalogo from './private/Catalogo';
+import Markets from './private/Markets';
 import { Entypo, AntDesign } from '@expo/vector-icons';
 import { Alert, BackHandler, TouchableOpacity } from 'react-native';
 import { DrawerActions } from '@react-navigation/core';
+import axios from 'axios';
 
 const Drawer = createDrawerNavigator();
 
+
 const MenuInicial = (props) => {
+
+  const userData = props.route.params.datosUsuario;
+
   const backAction = () => {
     Alert.alert(
       '¡Espera!',
@@ -17,7 +24,21 @@ const MenuInicial = (props) => {
       [
         {
           text: 'Cancelar',
-          onPress: null,
+          onPress: async () => {
+              try {
+                  const res = await axios.post('https://www.market-app.xyz/api/v1/logout', {
+                  }, {
+                      headers: {
+                          Authorization: 'Bearer ' + userData.access_token
+                      }
+                  });
+                  console.log(res.status);
+                  console.log(res.data);
+                  console.log(userData);
+              } catch (e) {
+                  console.log(e);
+              }
+          },
           style: 'cancel',
         },
         {
@@ -83,6 +104,8 @@ const MenuInicial = (props) => {
       <Drawer.Screen name='Mi Cuenta' component={MiCuenta} />
       <Drawer.Screen name='Nueva Venta' component={NuevaVenta} />
       <Drawer.Screen name='Lugar' component={Lugar} />
+      <Drawer.Screen name='Catalogo' component={Catalogo} />
+      <Drawer.Screen name='Markets' component={Markets} />
     </Drawer.Navigator>
   );
 };
