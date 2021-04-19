@@ -18,23 +18,8 @@ const Login = (props) => {
   const [btnVisible, setBtnVisible] = useState(true);
   const [aiVisible, setAiVisible] = useState(false);
   const [tiEnabled, setTiEnabled] = useState(true);
-  const [user, setUser] = useState([]);
+  const [user, setUser] = useState({});
   
-
-  const loggearse = async () => {
-      try {
-          const res = await axios.post('https://www.market-app.xyz/api/v1/login', {
-              'email': username,              
-              'password': password,
-          });
-          const json = await res.data;
-          setUser({json});
-          console.log(json);
-
-      } catch (e) {
-          console.log(e);
-      }
-  };
     
   const validaLogin = async () => {
     if (username.length < 10) {
@@ -58,19 +43,43 @@ const Login = (props) => {
 
       return;
     }
-    loggearse();
+    try {
+        const res = await axios.post('https://www.market-app.xyz/api/v1/login', {
+            'email': username,              
+            'password': password,
+        });
+        const json = await res.data;
+        setUser({ json });
+        console.log(user.access_token);
+        console.log(res.status);
+        console.log(username);
+        if (res.status === 200) {
+            Alert.alert('Hey!', `Bienvenido ${username}`, [
+                {
+                    title: 'Aceptar',
+                    onPress: () => {
+                        setBtnVisible(false);
+                        setAiVisible(true);
+                        setTiEnabled(false);
+                        setTimeout(() => {
+                            setBtnVisible(true);
+                            setAiVisible(false);
+                            setTiEnabled(true);
+                            //Direccionar a Home
+                            props.navigation.navigate("MenuInicial");
+                        }, 350);
+                    },
+                },
+            ],
+                {
+                    cancelable: false,
+                }
+            );
+        }
+    } catch (e) {
+        console.log(e);
+    }
 
-    setBtnVisible(false);
-    setAiVisible(true);
-    setTiEnabled(false);
-
-    setTimeout(() => {
-      setBtnVisible(true);
-      setAiVisible(false);
-      setTiEnabled(true);
-      //Direccionar a Home
-      props.navigation.navigate("MenuInicial");
-    }, 350);
   };
 
   return (
@@ -81,8 +90,9 @@ const Login = (props) => {
       />
 
       <TextInput
-        placeholder='Ingrese correo'
+        placeholder='Ingrese correo*'
         colorText='#fff'
+        placeholderTextColor= '#fff'
         keyboardType='email-address'
         style={formStyle.input}
         maxLength={50}
@@ -94,7 +104,9 @@ const Login = (props) => {
       />
 
       <TextInput
-        placeholder='Ingrese contraseña'
+        placeholder='Ingrese contraseña*'
+        colorText= '#fff'
+        placeholderTextColor= '#fff'
         keyboardType='default'
         style={formStyle.input}
         minLenght={8}

@@ -112,21 +112,34 @@ const Registro = (props) => {
                 );
                 return;
             }
-        await axios.post('https://www.market-app.xyz/api/v1/register', {
+        const res = await axios.post('https://www.market-app.xyz/api/v1/register', {
             'name': nombre,
             'email': email,
             'password': contrasena,
         });
-        setAiVisible(true);
-        setBtnVisible(false);
-        setTiEnabled(false);
-
-        setTimeout(() => {
-            setAiVisible(false);
-            setBtnVisible(true);
-            setTiEnabled(true);
-        }, 3000);
-
+        if (res.status === 201) {
+            Alert.alert('Hey!', `Has sido registrado exitosamente ${nombre}`, [
+                {
+                    title: 'Aceptar',
+                    onPress: () => {
+                        setAiVisible(true);
+                        setBtnVisible(false);
+                        setTiEnabled(false);
+                        setTimeout(() => {
+                            setAiVisible(false);
+                            setBtnVisible(true);
+                            setTiEnabled(true);
+                        }, 3000);
+                    },
+                },
+            ],
+                {
+                    cancelable: false,
+                }
+            );
+        }
+        console.log(res.data);
+        console.log(res.status);
     };
 
     return (

@@ -7,7 +7,7 @@ import axios from 'axios';
 const Prueba = (props) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
-  const [product, setProduct] = useState({});
+    const [products, setProducts] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -22,18 +22,19 @@ const Prueba = (props) => {
       console.log(`https://www.market-app.xyz/api/v1/products?barcode=${data}`);
       const res = await axios.get(`https://www.market-app.xyz/api/v1/products?barcode=${data}`);
       const json = await res.data;
-      setProduct({json});
+      const arrayProductos = [];
+      arrayProductos.push({ json });
+      setProducts(arrayProductos);
       console.log(json);
+      console.log(products[0]);
       //alert(`Bar code with type ${type} and data ${data} has been scanned!`);
       Alert.alert('¡Hey!', `Bar code: ${data}
-Producto: ${product.name}
-Precio: ${product.price}`, [
+Producto: ${json.name}
+Precio: ${json.price}`, [
                                 {
                                     text: 'Cancelar',
                                     onPress: () => {
-                                        if(scanned) {
-                                            setScanned(false);
-                                        }
+                                        
                                     }
                                 },
                                 {
