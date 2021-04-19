@@ -49,9 +49,8 @@ const Login = (props) => {
             'password': password,
         });
         const json = await res.data;
-        const datos = JSON.parse(JSON.stringify(json));
 
-        setUser(datos);
+        setUser(json);
         console.log(user);
         console.log(res.status);
         console.log(json);

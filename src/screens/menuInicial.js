@@ -4,6 +4,7 @@ import MiCuenta from './private/miCuenta';
 import NuevaVenta from './nuevaVenta';
 import Lugar from './Lugar';
 import Catalogo from './private/Catalogo';
+import Markets from './private/Markets';
 import { Entypo, AntDesign } from '@expo/vector-icons';
 import { Alert, BackHandler, TouchableOpacity } from 'react-native';
 import { DrawerActions } from '@react-navigation/core';
@@ -104,6 +105,7 @@ const MenuInicial = (props) => {
       <Drawer.Screen name='Nueva Venta' component={NuevaVenta} />
       <Drawer.Screen name='Lugar' component={Lugar} />
       <Drawer.Screen name='Catalogo' component={Catalogo} />
+      <Drawer.Screen name='Markets' component={Markets} />
     </Drawer.Navigator>
   );
 };
