@@ -101,9 +101,7 @@ const Login = (props) => {
                   setTiEnabled(true);
                   //Direccionar a Home
 
-                  props.navigation.navigate('MenuInicial', {
-                    datosUsuario: json,
-                  });
+                  props.navigation.navigate('MenuInicial');
                 }, 350);
               },
             },

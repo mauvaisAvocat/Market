@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import MiCuenta from './private/miCuenta';
 import NuevaVenta from './nuevaVenta';
@@ -9,13 +9,23 @@ import { Entypo, AntDesign } from '@expo/vector-icons';
 import { Alert, BackHandler, TouchableOpacity } from 'react-native';
 import { DrawerActions } from '@react-navigation/core';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Drawer = createDrawerNavigator();
 
 
 const MenuInicial = (props) => {
 
-  const userData = props.route.params.datosUsuario;
+    const [token, setToken] = useState('');
+
+    const getTokenStorage = async () => {
+        try {
+            setToken(await AsyncStorage.getItem('@access_token'));
+            console.log(token);
+        } catch (e) {
+            console.log(e);
+        }        
+    };
 
   const backAction = () => {
     Alert.alert(
@@ -25,16 +35,16 @@ const MenuInicial = (props) => {
         {
           text: 'Cancelar',
           onPress: async () => {
+              getTokenStorage();
               try {
                   const res = await axios.post('https://www.market-app.xyz/api/v1/logout', {
                   }, {
                       headers: {
-                          Authorization: 'Bearer ' + userData.access_token
+                          Authorization: 'Bearer ' + token
                       }
                   });
                   console.log(res.status);
                   console.log(res.data);
-                  console.log(userData);
               } catch (e) {
                   console.log(e);
               }
