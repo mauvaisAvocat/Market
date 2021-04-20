@@ -1,6 +1,6 @@
-import { useFocusEffect } from "@react-navigation/core";
-import formStyle from "../../styles/styles.forms";
-import React, { useState } from "react";
+import { useFocusEffect } from '@react-navigation/core';
+import formStyle from '../../styles/styles.forms';
+import React, { useState } from 'react';
 import {
   ImageBackground,
   ScrollView,
@@ -10,28 +10,47 @@ import {
   TouchableOpacity,
   View,
   Button,
-} from "react-native";
+} from 'react-native';
 
-import { FontAwesome5 } from "@expo/vector-icons";
-import AppModal from "./AppModal";
+import { FontAwesome5 } from '@expo/vector-icons';
+import AppModal from './AppModal';
 
-import * as ImagePicker from "expo-image-picker";
-import * as Permissions from "expo-permissions";
+import * as ImagePicker from 'expo-image-picker';
+import * as Permissions from 'expo-permissions';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const gettingStorage = async () => {
+  let result = null;
+
+  try {
+    result = await AsyncStorage.getItem('@access_token');
+
+    console.log('value obtained: ', result);
+  } catch (e) {
+    console.log('error reading value of login', e);
+  }
+
+  return result;
+};
 
 const MiCuenta = (props) => {
   const [modalImg, setModalImg] = useState(false);
   const [docUsuario, setDocUsuario] = useState({});
 
+  const token = gettingStorage();
+  console.log(token);
+
   //Titulo del screen en foco
   useFocusEffect(() => {
     props.navigation.dangerouslyGetParent().setOptions({
-      title: "Mi cuenta",
+      title: 'Mi cuenta',
     });
   });
 
   const tomarImagenGaleria = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status === "granted") {
+    if (status === 'granted') {
       const imgGaleria = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
@@ -41,7 +60,7 @@ const MiCuenta = (props) => {
       if (!imgGaleria.cancelled) {
         setDocUsuario({
           ...docUsuario,
-          ["avatar"]: imgGaleria.uri,
+          ['avatar']: imgGaleria.uri,
         });
 
         setModalImg(false);
@@ -56,12 +75,12 @@ const MiCuenta = (props) => {
          * File ([blob], nombre, propiedades)
          */
         const file = new File([blob], `${docUsuario.id}.jpg`, {
-          type: "image/jpeg",
+          type: 'image/jpeg',
         });
 
         blob.close();
       } else {
-        Alert.alert("ERROR", "Selecciona una imagen de tu galería");
+        Alert.alert('ERROR', 'Selecciona una imagen de tu galería');
       }
     }
   };
@@ -73,8 +92,8 @@ const MiCuenta = (props) => {
       Permissions.MEDIA_LIBRARY
     );
     if (
-      permisoCamara.status === "granted" &&
-      permisoGaleria.status === "granted"
+      permisoCamara.status === 'granted' &&
+      permisoGaleria.status === 'granted'
     ) {
       const imgCamara = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -87,15 +106,15 @@ const MiCuenta = (props) => {
       if (!imgCamara.cancelled) {
         setDocUsuario({
           ...docUsuario,
-          ["avatar"]: imgCamara.uri,
+          ['avatar']: imgCamara.uri,
         });
 
         setModalImg(false);
       } else {
-        Alert.alert("ERROR", "Toma una foto para continuar");
+        Alert.alert('ERROR', 'Toma una foto para continuar');
       }
     } else {
-      Alert.alert("ERROR", "Faltan permisos para continuar");
+      Alert.alert('ERROR', 'Faltan permisos para continuar');
     }
   };
 
@@ -105,19 +124,19 @@ const MiCuenta = (props) => {
         <AppModal
           show={modalImg}
           layerBgOpacity={0.5}
-          modalBgColor='#fff'
+          modalBgColor="#fff"
           modalOpacity={1}
           modalContent={
             <View>
               <Text
                 style={{
-                  alignSelf: "center",
+                  alignSelf: 'center',
                   marginVertical: 1,
                   fontSize: 18,
-                  fontWeight: "500",
+                  fontWeight: '500',
                 }}
               >
-                <FontAwesome5 name='camera' size={20} /> CAMBIAR IMAGEN
+                <FontAwesome5 name="camera" size={20} /> CAMBIAR IMAGEN
               </Text>
               <View
                 style={{
@@ -126,8 +145,8 @@ const MiCuenta = (props) => {
               />
 
               <Button
-                color='#1429A3'
-                title='Tomar foto'
+                color="#1429A3"
+                title="Tomar foto"
                 onPress={tomarFotoCamara}
               />
 
@@ -138,8 +157,8 @@ const MiCuenta = (props) => {
               />
 
               <Button
-                color='#1429A3'
-                title='Galería'
+                color="#1429A3"
+                title="Galería"
                 onPress={tomarImagenGaleria}
               />
 
@@ -150,8 +169,8 @@ const MiCuenta = (props) => {
               />
 
               <Button
-                title='Cancelar'
-                color='#C70039'
+                title="Cancelar"
+                color="#C70039"
                 onPress={() => setModalImg(false)}
               />
             </View>
@@ -162,40 +181,40 @@ const MiCuenta = (props) => {
         <TouchableOpacity onPress={() => setModalImg(true)}>
           <ImageBackground
             source={
-              typeof docUsuario.avatar !== "undefined"
+              typeof docUsuario.avatar !== 'undefined'
                 ? { uri: docUsuario.avatar }
-                : require("./../../../assets/images/determinado.png")
+                : require('./../../../assets/images/determinado.png')
             }
             style={formStyle.imagen}
           >
             <Text
               style={{
-                backgroundColor: "#000",
-                color: "#fff",
-                width: "100%",
+                backgroundColor: '#000',
+                color: '#fff',
+                width: '100%',
                 paddingBottom: 20,
                 paddingTop: 10,
                 opacity: 0.8,
-                textAlign: "center",
-                position: "absolute",
+                textAlign: 'center',
+                position: 'absolute',
                 bottom: 1,
               }}
             >
-              <FontAwesome5 name='camera' size={16} color='#fff' /> Cambiar
+              <FontAwesome5 name="camera" size={16} color="#fff" /> Cambiar
               imagen
             </Text>
           </ImageBackground>
         </TouchableOpacity>
 
-        <TextInput style={formStyle.input} value={"Verónica"} />
-        <TextInput style={formStyle.input} value={"Lorenzo"} />
-        <TextInput style={formStyle.input} value={"Alavez"} />
+        <TextInput style={formStyle.input} value={'Verónica'} />
+        <TextInput style={formStyle.input} value={'Lorenzo'} />
+        <TextInput style={formStyle.input} value={'Alavez'} />
         <TextInput
           style={formStyle.input}
-          value={"veronicalorenzo1999@gmail.com"}
+          value={'veronicalorenzo1999@gmail.com'}
         />
-        <TextInput style={formStyle.input} value={"4424695054"} />
-        <TextInput style={formStyle.input} value={"veronica12345"} />
+        <TextInput style={formStyle.input} value={'4424695054'} />
+        <TextInput style={formStyle.input} value={'veronica12345'} />
         <TouchableOpacity style={formStyle.estiloBoton}>
           <Text style={formStyle.estiloBotonText}>Guardar cambios</Text>
         </TouchableOpacity>
