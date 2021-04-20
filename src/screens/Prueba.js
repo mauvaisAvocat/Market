@@ -11,7 +11,7 @@ const Prueba = (props) => {
   const [token, setToken] = useState('');
   const [relation, setRelation] = useState('');
   const [products, setProducts] = useState([]);
-    let arraySells = [];
+  let arraySells = [];
 
   useEffect(() => {
     (async () => {
@@ -19,107 +19,110 @@ const Prueba = (props) => {
       setHasPermission(status === 'granted');
     })();
   }, []);
-  
-    const getSell = async () => {
-        try {
-            const result = await AsyncStorage.getItem('@access_token');
-            setToken(result);
-            //const result2 = await AsyncStorage.getItem('@user.markets');
-            //const jsonValue = await JSON.parse(result2);
-            //const json = await jsonValue.relation_id;
-            //setRelation(json);
-        } catch (e) {
-            console.log(e);
-        }
-    };
 
-    getSell();
+  const getSell = async () => {
+    try {
+      const result = await AsyncStorage.getItem('@access_token');
+      setToken(result);
+      //const result2 = await AsyncStorage.getItem('@user.markets');
+      //const jsonValue = await JSON.parse(result2);
+      //const json = await jsonValue.relation_id;
+      //setRelation(json);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  getSell();
 
   const handleBarCodeScanned = async ({ type, data }) => {
-      setScanned(true);
-      console.log(`https://www.market-app.xyz/api/v1/products?barcode=${data}`);
-      const res = await axios.get(`https://www.market-app.xyz/api/v1/products?barcode=${data}`, {
-              headers: {
-                  Authorization: 'Bearer ' + token
-              }
-      });
-      const json = await res.data;
-      console.log(json);
-      //alert(`Bar code with type ${type} and data ${data} has been scanned!`)
-      if (json.stock > 0) {
-                Alert.alert('¡Hey!', `Bar code: ${data}
+    setScanned(true);
+    console.log(`https://www.market-app.xyz/api/v1/products?barcode=${data}`);
+    const res = await axios.get(
+      `https://www.market-app.xyz/api/v1/products?barcode=${data}`,
+      {
+        headers: {
+          Authorization: 'Bearer ' + token,
+        },
+      }
+    );
+    const json = await res.data;
+    console.log(json);
+    //alert(`Bar code with type ${type} and data ${data} has been scanned!`)
+    if (json.stock > 0) {
+      Alert.alert(
+        '¡Hey!',
+        `Bar code: ${data}
 Producto: ${json.name}
-Precio: ${json.price}`, [
-                                {
-                                    text: 'Cancelar',
-                                    onPress: () => {
-                                        
-                                    }
-                                },
-                                {
-                                    text: 'Agregar a lista',
-                                    onPress: () => {
-                                        arraySells.push({
-                                            'quant': 1,
-                                            'product_id': json.id,
-                                        });
-                                        setProducts(arraySells);
-                                        console.log(json);
-                                        console.log(arraySells[0]);
-                                    }
-                                },
-                                {
-                                    text: 'Finalizar venta',
-                                    onPress: async () => {
-                                        try {
-                                            if (arraySells.length > 1) {
-                                                const res = await axios.post('https://www.market-app.xyz/api/v1/sell', {
-                                                    'sells': products,
-                                                    'relation_id': 1,
-                                                });
-                                                console.log(res.data);
-                                                console.log(products[0]);
-                                            }
-                                            if (arraySells.length === 1) {
-                                                arraySells.push({
-                                                    'quant': 1,
-                                                    'product_id': json.id,
-                                                });
-                                                setProducts(arraySells);
-                                                const res = await axios.post('https://www.market-app.xyz/api/v1/sell', {
-                                                    'sells': products,
-                                                    'relation_id': 1,
-                                                });
-                                                console.log(res.data);
-                                            }
-                                        } catch (e) {
-                                            console.log(e);
-                                        }
-                                    },
-                                },
-                            ],
-                                {
-                                    cancelable: false,
-                                }
-                            );
-      }
+Precio: ${json.price}`,
+        [
+          {
+            text: 'Cancelar',
+            onPress: () => {},
+          },
+          {
+            text: 'Agregar a lista',
+            onPress: async () => {
+              arraySells.push({
+                quant: 1,
+                product_id: json.id,
+              });
+              setProducts(arraySells);
+              console.log(json);
+            },
+          },
+          {
+            text: 'Finalizar venta',
+            onPress: async () => {
+              try {
+                arraySells.push({
+                  quant: 1,
+                  product_id: json.id,
+                });
+                setProducts(arraySells);
+                console.log(json);
+                console.log(arraySells);
 
-      if (json.stock <= 0) {
-          Alert.alert('ERROR', 'No hay suficiente stock...', [
-              {
-                  title: 'Aceptar',
-                  onPress: null,
-              },
-          ],
-              {
-                  cancelable: false,
+                const res = await axios.post(
+                  'https://www.market-app.xyz/api/v1/sell',
+                  {
+                    sells: arraySells,
+                    relation_id: 1,
+                  }
+                );
+                console.log(res.data);
+                console.log(arraySells);
+              } catch (e) {
+                console.log(e);
               }
-          );
-      }
+            },
+          },
+        ],
+        {
+          cancelable: false,
+        }
+      );
+    }
 
-      console.log(data);
+    if (json.stock <= 0) {
+      Alert.alert(
+        'ERROR',
+        'No hay suficiente stock...',
+        [
+          {
+            title: 'Aceptar',
+            onPress: null,
+          },
+        ],
+        {
+          cancelable: false,
+        }
+      );
+    }
+
+    console.log(data);
   };
-    
+
   if (hasPermission === null) {
     return <Text>Requesting for camera permission</Text>;
   }
@@ -133,8 +136,7 @@ Precio: ${json.price}`, [
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={StyleSheet.absoluteFillObject}
       />
-      
     </View>
   );
-}
+};
 export default Prueba;
