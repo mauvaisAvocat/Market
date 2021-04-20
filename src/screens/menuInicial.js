@@ -60,6 +60,7 @@ const MenuInicial = (props) => {
                 
             } catch (e) {
                 console.log(e);
+                //console.log(token);
             }  
           },
           style: 'default',

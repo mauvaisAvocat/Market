@@ -108,7 +108,20 @@ const Login = (props) => {
         );
       }
     } catch (e) {
-      console.log(e);
+        console.log(e);
+        Alert.alert('ERROR!', 'Correo electrónico o password incorrecto', [
+            {
+                title: 'Aceptar',
+                onPress: () => {
+                    setUsername('');
+                    setPassword('');
+                },
+            },
+        ],
+            {
+                cancelable: false,
+            }
+        );
     }
   };
 

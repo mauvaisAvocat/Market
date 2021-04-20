@@ -44,8 +44,10 @@ const Prueba = (props) => {
               }
       });
       const json = await res.data;
-      //alert(`Bar code with type ${type} and data ${data} has been scanned!`);
-      Alert.alert('¡Hey!', `Bar code: ${data}
+      console.log(json);
+      //alert(`Bar code with type ${type} and data ${data} has been scanned!`)
+      if (json.stock > 0) {
+                Alert.alert('¡Hey!', `Bar code: ${data}
 Producto: ${json.name}
 Precio: ${json.price}`, [
                                 {
@@ -81,11 +83,26 @@ Precio: ${json.price}`, [
                                         }
                                     },
                                 },
-                ],
-                            {
-                                cancelable: false,
-                            }
+                            ],
+                                {
+                                    cancelable: false,
+                                }
                             );
+      }
+
+      if (json.stock <= 0) {
+          Alert.alert('ERROR', 'No hay suficiente stock...', [
+              {
+                  title: 'Aceptar',
+                  onPress: null,
+              },
+          ],
+              {
+                  cancelable: false,
+              }
+          );
+      }
+
       console.log(data);
   };
     
