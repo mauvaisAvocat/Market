@@ -62,22 +62,36 @@ Precio: ${json.price}`, [
                                         arraySells.push({
                                             'quant': 1,
                                             'product_id': json.id,
-                                    });
-                                    setProducts(arraySells);
-                                    console.log(json);
-                                    console.log(arraySells[0]);
+                                        });
+                                        setProducts(arraySells);
+                                        console.log(json);
+                                        console.log(arraySells[0]);
                                     }
                                 },
                                 {
                                     text: 'Finalizar venta',
                                     onPress: async () => {
                                         try {
-                                            const res = await axios.post('https://www.market-app.xyz/api/v1/sell', {
-                                                'sells': products,
-                                                'relation_id': 1,
-                                            });
-                                            console.log(res.data);
-                                            console.log(products[0]);
+                                            if (arraySells.length > 1) {
+                                                const res = await axios.post('https://www.market-app.xyz/api/v1/sell', {
+                                                    'sells': products,
+                                                    'relation_id': 1,
+                                                });
+                                                console.log(res.data);
+                                                console.log(products[0]);
+                                            }
+                                            if (arraySells.length === 1) {
+                                                arraySells.push({
+                                                    'quant': 1,
+                                                    'product_id': json.id,
+                                                });
+                                                setProducts(arraySells);
+                                                const res = await axios.post('https://www.market-app.xyz/api/v1/sell', {
+                                                    'sells': products,
+                                                    'relation_id': 1,
+                                                });
+                                                console.log(res.data);
+                                            }
                                         } catch (e) {
                                             console.log(e);
                                         }
