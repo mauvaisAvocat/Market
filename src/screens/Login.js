@@ -19,7 +19,6 @@ const Login = (props) => {
   const [btnVisible, setBtnVisible] = useState(true);
   const [aiVisible, setAiVisible] = useState(false);
   const [tiEnabled, setTiEnabled] = useState(true);
-  const [user, setUser] = useState({});
 
   const validaLogin = async () => {
     if (username.length < 10) {
@@ -49,10 +48,7 @@ const Login = (props) => {
         password: password,
       });
       const json = await res.data;
-
-      setUser(json);
-      console.log(user);
-      console.log(res.status);
+      //console.log(res.status);
       console.log(json);
       console.log(username);
 
@@ -71,8 +67,8 @@ const Login = (props) => {
           );
 
           console.log('setting on storage: @access_token ', json.access_token);
-          console.log('setting on storage: @user.email ', json.user.email);
-          console.log('setting on storage: @user.name ', json.user.name);
+          //console.log('setting on storage: @user.email ', json.user.email);
+          //console.log('setting on storage: @user.name ', json.user.name);
           console.log(
             'setting on storage: @user.markets ',
             JSON.stringify(json.user.markets)

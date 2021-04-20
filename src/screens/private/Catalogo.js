@@ -4,6 +4,8 @@ import { FlatList, View } from 'react-native';
 import axios from 'axios';
 import { useEffect } from 'react';
 import Producto from '../../components/Producto';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import stylesForms from '../../styles/styles.forms';
 
 const Catologo = (props) => {
 
@@ -35,7 +37,7 @@ const Catologo = (props) => {
     };
 
     return (
-        <View style={{ flex: 1 }}>
+        <View style={ stylesForms.contenedor}>
 
             <FlatList
                 style={{

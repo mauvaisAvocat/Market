@@ -20,33 +20,37 @@ import * as Permissions from 'expo-permissions';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const gettingStorage = async () => {
-  let result = null;
-
-  try {
-    result = await AsyncStorage.getItem('@access_token');
-
-    console.log('value obtained: ', result);
-  } catch (e) {
-    console.log('error reading value of login', e);
-  }
-
-  return result;
-};
 
 const MiCuenta = (props) => {
   const [modalImg, setModalImg] = useState(false);
   const [docUsuario, setDocUsuario] = useState({});
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [image, setImage] = useState('');
 
-  const token = gettingStorage();
-  console.log(token);
+    const datosUser = async () => {
+        try {
+            const result = await AsyncStorage.getItem('@user.name');
+            setName(result);
+            const result2 = await AsyncStorage.getItem('@user.email');
+            setEmail(result2);
+            const result3 = await AsyncStorage.getItem('@user.profile_photo_url');
+            setImage(result3);
+        } catch (e) {
+            console.log(e);
+        }
+
+    };
 
   //Titulo del screen en foco
   useFocusEffect(() => {
     props.navigation.dangerouslyGetParent().setOptions({
       title: 'Mi cuenta',
     });
+      
   });
+    
+  datosUser();
 
   const tomarImagenGaleria = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -183,7 +187,8 @@ const MiCuenta = (props) => {
             source={
               typeof docUsuario.avatar !== 'undefined'
                 ? { uri: docUsuario.avatar }
-                : require('./../../../assets/images/determinado.png')
+                : {uri: image}
+                
             }
             style={formStyle.imagen}
           >
@@ -206,15 +211,14 @@ const MiCuenta = (props) => {
           </ImageBackground>
         </TouchableOpacity>
 
-        <TextInput style={formStyle.input} value={'Verónica'} />
-        <TextInput style={formStyle.input} value={'Lorenzo'} />
-        <TextInput style={formStyle.input} value={'Alavez'} />
+        <TextInput style={formStyle.input} value={name} />
+        <TextInput style={formStyle.input} value={'Ingresar apellido1'} />
+        <TextInput style={formStyle.input} value={'Ingresar apellido2'} />
         <TextInput
           style={formStyle.input}
-          value={'veronicalorenzo1999@gmail.com'}
+          value={email}
         />
-        <TextInput style={formStyle.input} value={'4424695054'} />
-        <TextInput style={formStyle.input} value={'veronica12345'} />
+        <TextInput style={formStyle.input} value={'Ingresar teléfono'} />
         <TouchableOpacity style={formStyle.estiloBoton}>
           <Text style={formStyle.estiloBotonText}>Guardar cambios</Text>
         </TouchableOpacity>

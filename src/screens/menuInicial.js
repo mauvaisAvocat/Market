@@ -20,45 +20,47 @@ const MenuInicial = (props) => {
 
     const getTokenStorage = async () => {
         try {
-            setToken(await AsyncStorage.getItem('@access_token'));
+            const result = await AsyncStorage.getItem('@access_token');
+            setToken(result);
             console.log(token);
         } catch (e) {
             console.log(e);
         }        
     };
 
-  const backAction = () => {
+    getTokenStorage();
+  const backAction = async () => {
+      
     Alert.alert(
       '¡Espera!',
       '¿Realmente desea salir?',
       [
         {
           text: 'Cancelar',
-          onPress: async () => {
-              getTokenStorage();
-              try {
-                  const res = await axios.post('https://www.market-app.xyz/api/v1/logout', {
-                  }, {
-                      headers: {
-                          Authorization: 'Bearer ' + token
-                      }
-                  });
-                  console.log(res.status);
-                  console.log(res.data);
-              } catch (e) {
-                  console.log(e);
-              }
-          },
+          onPress: null,
           style: 'cancel',
         },
         {
           text: 'Salir',
-          onPress: () => {
-            props.navigation.reset({
-              index: 0,
-              routes: [{ name: 'Login' }],
-            });
-            props.navigation.navigate('Login');
+          onPress: async () => {
+            try {
+                const res = await axios.post('https://www.market-app.xyz/api/v1/logout',{},
+                {
+                    headers: {
+                        Authorization: 'Bearer ' + token
+                    }
+                });
+                console.log(res.status);
+                console.log(res.data);
+                props.navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'Login' }],
+                });
+                props.navigation.navigate('Login');
+                
+            } catch (e) {
+                console.log(e);
+            }  
           },
           style: 'default',
         },

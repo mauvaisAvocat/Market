@@ -3,10 +3,13 @@ import { Text, View, StyleSheet, Button, Alert } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import styles from '../styles/styles.forms';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Prueba = (props) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
+  const [token, setToken] = useState('');
+  const [relation, setRelation] = useState('');
   const [products, setProducts] = useState([]);
     let arraySells = [];
 
@@ -17,11 +20,29 @@ const Prueba = (props) => {
     })();
   }, []);
   
+    const getSell = async () => {
+        try {
+            const result = await AsyncStorage.getItem('@access_token');
+            setToken(result);
+            //const result2 = await AsyncStorage.getItem('@user.markets');
+            //const jsonValue = await JSON.parse(result2);
+            //const json = await jsonValue.relation_id;
+            //setRelation(json);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
+    getSell();
 
   const handleBarCodeScanned = async ({ type, data }) => {
       setScanned(true);
       console.log(`https://www.market-app.xyz/api/v1/products?barcode=${data}`);
-      const res = await axios.get(`https://www.market-app.xyz/api/v1/products?barcode=${data}`);
+      const res = await axios.get(`https://www.market-app.xyz/api/v1/products?barcode=${data}`, {
+              headers: {
+                  Authorization: 'Bearer ' + token
+              }
+      });
       const json = await res.data;
       //alert(`Bar code with type ${type} and data ${data} has been scanned!`);
       Alert.alert('¡Hey!', `Bar code: ${data}
