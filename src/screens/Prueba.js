@@ -88,8 +88,8 @@ Precio: ${json.price}`,
                 );
                 if (res.status == 200) {
                   Alert.alert(
-                    'Venda confirmada',
-                    'Alerta confirmada, continua vendiendo',
+                    'Venta confirmada',
+                    'Venta confirmada, continua vendiendo',
                     [
                       {
                         text: 'aceptar',
