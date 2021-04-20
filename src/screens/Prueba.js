@@ -10,6 +10,7 @@ const Prueba = (props) => {
   const [scanned, setScanned] = useState(false);
   const [token, setToken] = useState('');
   const [relation, setRelation] = useState('');
+  const [market, setMarket] = useState('');
   const [products, setProducts] = useState([]);
   let arraySells = [];
 
@@ -24,6 +25,9 @@ const Prueba = (props) => {
     try {
       const result = await AsyncStorage.getItem('@access_token');
       setToken(result);
+
+      const relation_id = await AsyncStorage.getItem('@user.markets');
+      setMarket(relation_id);
       //const result2 = await AsyncStorage.getItem('@user.markets');
       //const jsonValue = await JSON.parse(result2);
       //const json = await jsonValue.relation_id;
@@ -58,17 +62,8 @@ Precio: ${json.price}`,
         [
           {
             text: 'Cancelar',
-            onPress: () => {},
-          },
-          {
-            text: 'Agregar a lista',
-            onPress: async () => {
-              arraySells.push({
-                quant: 1,
-                product_id: json.id,
-              });
-              setProducts(arraySells);
-              console.log(json);
+            onPress: () => {
+              setScanned(false);
             },
           },
           {
@@ -82,18 +77,35 @@ Precio: ${json.price}`,
                 setProducts(arraySells);
                 console.log(json);
                 console.log(arraySells);
+                console.log('relation_id: ', market);
 
                 const res = await axios.post(
                   'https://www.market-app.xyz/api/v1/sell',
                   {
                     sells: arraySells,
-                    relation_id: 1,
+                    relation_id: market,
                   }
                 );
+                if (res.status == 200) {
+                  Alert.alert(
+                    'Venda confirmada',
+                    'Alerta confirmada, continua vendiendo',
+                    [
+                      {
+                        text: 'aceptar',
+                        onPress: () => {
+                          setScanned(false);
+                        },
+                      },
+                    ]
+                  );
+                }
                 console.log(res.data);
                 console.log(arraySells);
+                setScanned(false);
               } catch (e) {
                 console.log(e);
+                setScanned(false);
               }
             },
           },
@@ -118,6 +130,7 @@ Precio: ${json.price}`,
           cancelable: false,
         }
       );
+      setScanned(false);
     }
 
     console.log(data);

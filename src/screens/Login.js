@@ -57,10 +57,11 @@ const Login = (props) => {
           AsyncStorage.setItem('@access_token', json.access_token);
           AsyncStorage.setItem('@user.email', json.user.email);
           AsyncStorage.setItem('@user.name', json.user.name);
-          AsyncStorage.setItem(
-            '@user.markets',
-            JSON.stringify(json.user.markets)
-          );
+          if (json.user.markets.length >= 1) {
+            let aNumber = '' + json.user.markets[0].relation_id;
+            console.log('relation_id: ', aNumber, typeof aNumber);
+            AsyncStorage.setItem('@user.markets', aNumber);
+          }
           AsyncStorage.setItem(
             '@user.profile_photo_url',
             json.user.profile_photo_url
@@ -69,10 +70,6 @@ const Login = (props) => {
           console.log('setting on storage: @access_token ', json.access_token);
           //console.log('setting on storage: @user.email ', json.user.email);
           //console.log('setting on storage: @user.name ', json.user.name);
-          console.log(
-            'setting on storage: @user.markets ',
-            JSON.stringify(json.user.markets)
-          );
           console.log(
             'setting on storage: @user.profile_photo_url ',
             json.user.profile_photo_url
@@ -108,20 +105,23 @@ const Login = (props) => {
         );
       }
     } catch (e) {
-        console.log(e);
-        Alert.alert('ERROR!', 'Correo electrónico o password incorrecto', [
-            {
-                title: 'Aceptar',
-                onPress: () => {
-                    setUsername('');
-                    setPassword('');
-                },
+      console.log(e);
+      Alert.alert(
+        'ERROR!',
+        'Correo electrónico o password incorrecto',
+        [
+          {
+            title: 'Aceptar',
+            onPress: () => {
+              setUsername('');
+              setPassword('');
             },
+          },
         ],
-            {
-                cancelable: false,
-            }
-        );
+        {
+          cancelable: false,
+        }
+      );
     }
   };
 

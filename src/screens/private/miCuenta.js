@@ -20,7 +20,6 @@ import * as Permissions from 'expo-permissions';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
 const MiCuenta = (props) => {
   const [modalImg, setModalImg] = useState(false);
   const [docUsuario, setDocUsuario] = useState({});
@@ -28,28 +27,26 @@ const MiCuenta = (props) => {
   const [email, setEmail] = useState('');
   const [image, setImage] = useState('');
 
-    const datosUser = async () => {
-        try {
-            const result = await AsyncStorage.getItem('@user.name');
-            setName(result);
-            const result2 = await AsyncStorage.getItem('@user.email');
-            setEmail(result2);
-            const result3 = await AsyncStorage.getItem('@user.profile_photo_url');
-            setImage(result3);
-        } catch (e) {
-            console.log(e);
-        }
-
-    };
+  const datosUser = async () => {
+    try {
+      const result = await AsyncStorage.getItem('@user.name');
+      setName(result);
+      const result2 = await AsyncStorage.getItem('@user.email');
+      setEmail(result2);
+      const result3 = await AsyncStorage.getItem('@user.profile_photo_url');
+      setImage(result3);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   //Titulo del screen en foco
   useFocusEffect(() => {
     props.navigation.dangerouslyGetParent().setOptions({
       title: 'Mi cuenta',
     });
-      
   });
-    
+
   datosUser();
 
   const tomarImagenGaleria = async () => {
@@ -187,38 +184,14 @@ const MiCuenta = (props) => {
             source={
               typeof docUsuario.avatar !== 'undefined'
                 ? { uri: docUsuario.avatar }
-                : {uri: image}
-                
+                : { uri: image }
             }
             style={formStyle.imagen}
-          >
-            <Text
-              style={{
-                backgroundColor: '#000',
-                color: '#fff',
-                width: '100%',
-                paddingBottom: 20,
-                paddingTop: 10,
-                opacity: 0.8,
-                textAlign: 'center',
-                position: 'absolute',
-                bottom: 1,
-              }}
-            >
-              <FontAwesome5 name="camera" size={16} color="#fff" /> Cambiar
-              imagen
-            </Text>
-          </ImageBackground>
+          ></ImageBackground>
         </TouchableOpacity>
 
         <TextInput style={formStyle.input} value={name} />
-        <TextInput style={formStyle.input} value={'Ingresar apellido1'} />
-        <TextInput style={formStyle.input} value={'Ingresar apellido2'} />
-        <TextInput
-          style={formStyle.input}
-          value={email}
-        />
-        <TextInput style={formStyle.input} value={'Ingresar teléfono'} />
+        <TextInput style={formStyle.input} value={email} />
         <TouchableOpacity style={formStyle.estiloBoton}>
           <Text style={formStyle.estiloBotonText}>Guardar cambios</Text>
         </TouchableOpacity>
