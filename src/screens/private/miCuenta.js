@@ -26,6 +26,7 @@ const MiCuenta = (props) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [image, setImage] = useState('');
+  const [market, setMarket] = useState('');
 
   const datosUser = async () => {
     try {
@@ -35,6 +36,12 @@ const MiCuenta = (props) => {
       setEmail(result2);
       const result3 = await AsyncStorage.getItem('@user.profile_photo_url');
       setImage(result3);
+      if ((await AsyncStorage.getItem('@user.has_markets')) == '1') {
+        const result4 = await AsyncStorage.getItem('@user.name_market');
+        setMarket(result4);
+      } else {
+        setMarket('Aun no perteneces a un Market):');
+      }
     } catch (e) {
       console.log(e);
     }
@@ -179,22 +186,35 @@ const MiCuenta = (props) => {
         />
       ) : null}
       <ScrollView>
-        <TouchableOpacity onPress={() => setModalImg(true)}>
-          <ImageBackground
-            source={
-              typeof docUsuario.avatar !== 'undefined'
-                ? { uri: docUsuario.avatar }
-                : { uri: image }
-            }
-            style={formStyle.imagen}
-          ></ImageBackground>
-        </TouchableOpacity>
+        {/* <TouchableOpacity onPress={() => setModalImg(true)}> */}
+        <ImageBackground
+          source={
+            typeof docUsuario.avatar !== 'undefined'
+              ? { uri: docUsuario.avatar }
+              : { uri: image }
+          }
+          style={formStyle.imagen}
+        ></ImageBackground>
+        {/* </TouchableOpacity> */}
 
-        <TextInput style={formStyle.input} value={name} />
-        <TextInput style={formStyle.input} value={email} />
-        <TouchableOpacity style={formStyle.estiloBoton}>
+        <TextInput
+          style={formStyle.input}
+          value={'Nombre: ' + name}
+          editable={false}
+        />
+        <TextInput
+          style={formStyle.input}
+          value={'Email: ' + email}
+          editable={false}
+        />
+        <TextInput
+          style={formStyle.input}
+          value={'Market: ' + market}
+          editable={false}
+        />
+        {/* <TouchableOpacity style={formStyle.estiloBoton}>
           <Text style={formStyle.estiloBotonText}>Guardar cambios</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </ScrollView>
     </View>
   );

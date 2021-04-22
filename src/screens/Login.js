@@ -49,31 +49,71 @@ const Login = (props) => {
       });
       const json = await res.data;
       //console.log(res.status);
-      console.log(json);
-      console.log(username);
+      // console.log(json);
+      // console.log(username);
 
       if (res.status === 200) {
         try {
+          console.log(
+            '--------------------------------------------------------------------------------------------------------------------------------------------------------'
+          );
           AsyncStorage.setItem('@access_token', json.access_token);
+          console.log('@access_token: ', json.access_token);
+
           AsyncStorage.setItem('@user.email', json.user.email);
+          console.log('@user.email: ', json.user.email);
+
           AsyncStorage.setItem('@user.name', json.user.name);
-          if (json.user.markets.length >= 1) {
+          console.log('@user.name: ', json.user.name);
+
+          if (json.user.markets.length != 0) {
+            AsyncStorage.setItem('@user.has_markets', '1');
+            console.log('@user.has_markets: 1');
+
             let aNumber = '' + json.user.markets[0].relation_id;
-            console.log('relation_id: ', aNumber, typeof aNumber);
+
+            AsyncStorage.setItem(
+              '@user.name_market',
+              json.user.markets[0].name
+            );
+            console.log('@user.name_market: ', json.user.markets[0].name);
+
             AsyncStorage.setItem('@user.markets', aNumber);
+            console.log('relation_id: ', aNumber, typeof aNumber);
+
+            if (json.user.markets[0].location.active) {
+              AsyncStorage.setItem('@location.active', '1');
+
+              AsyncStorage.setItem(
+                '@user.latitude',
+                '' + json.user.markets[0].location.latitude
+              );
+              console.log(
+                '@user.latitude: ',
+                '' + json.user.markets[0].location.latitude
+              );
+
+              AsyncStorage.setItem(
+                '@user.longitude',
+                '' + json.user.markets[0].location.longitude
+              );
+              console.log(
+                '@user.longitude: ',
+                '' + json.user.markets[0].location.longitude
+              );
+            } else {
+              AsyncStorage.setItem('@location.active', '0');
+            }
+          } else {
+            AsyncStorage.setItem('@user.has_markets', '0');
+            console.log('@user.has_markets: 0');
           }
+
           AsyncStorage.setItem(
             '@user.profile_photo_url',
             json.user.profile_photo_url
           );
-
-          console.log('setting on storage: @access_token ', json.access_token);
-          //console.log('setting on storage: @user.email ', json.user.email);
-          //console.log('setting on storage: @user.name ', json.user.name);
-          console.log(
-            'setting on storage: @user.profile_photo_url ',
-            json.user.profile_photo_url
-          );
+          console.log('@user.profile_photo_url: ', json.user.profile_photo_url);
         } catch (e) {
           console.log('Error guardando el login: ', e);
         }
@@ -128,14 +168,14 @@ const Login = (props) => {
   return (
     <View style={formStyle.contenedor}>
       <Image
-        source={require('./../../assets/images/login.png')}
+        source={require('./../../assets/images/logo.png')}
         style={formStyle.imagen}
       />
 
       <TextInput
         placeholder="Ingrese correo*"
-        colorText="#fff"
-        placeholderTextColor="#fff"
+        colorText="#000"
+        placeholderTextColor="#000"
         keyboardType="email-address"
         style={formStyle.input}
         maxLength={50}
@@ -148,8 +188,8 @@ const Login = (props) => {
 
       <TextInput
         placeholder="Ingrese contraseña*"
-        colorText="#fff"
-        placeholderTextColor="#fff"
+        colorText="#000"
+        placeholderTextColor="#000"
         keyboardType="default"
         style={formStyle.input}
         minLenght={8}

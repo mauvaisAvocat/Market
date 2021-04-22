@@ -13,24 +13,29 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Drawer = createDrawerNavigator();
 
-
 const MenuInicial = (props) => {
+  const [token, setToken] = useState('');
+  const [has, setHas] = useState('');
+  const [location, setLocation] = useState('');
 
-    const [token, setToken] = useState('');
+  const getTokenStorage = async () => {
+    try {
+      const result = await AsyncStorage.getItem('@access_token');
+      setToken(result);
 
-    const getTokenStorage = async () => {
-        try {
-            const result = await AsyncStorage.getItem('@access_token');
-            setToken(result);
-            console.log(token);
-        } catch (e) {
-            console.log(e);
-        }        
-    };
+      const result2 = await AsyncStorage.getItem('@user.has_markets');
+      setHas(result2);
 
-    getTokenStorage();
+      const result3 = await AsyncStorage.getItem('@location.active');
+      setLocation(result3);
+      // console.log(token);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  getTokenStorage();
   const backAction = async () => {
-      
     Alert.alert(
       '¡Espera!',
       '¿Realmente desea salir?',
@@ -43,25 +48,7 @@ const MenuInicial = (props) => {
         {
           text: 'Salir',
           onPress: async () => {
-            try {
-                const res = await axios.post('https://www.market-app.xyz/api/v1/logout',{},
-                {
-                    headers: {
-                        Authorization: 'Bearer ' + token
-                    }
-                });
-                console.log(res.status);
-                console.log(res.data);
-                props.navigation.reset({
-                    index: 0,
-                    routes: [{ name: 'Login' }],
-                });
-                props.navigation.navigate('Login');
-                
-            } catch (e) {
-                console.log(e);
-                //console.log(token);
-            }  
+            props.navigation.navigate('Login');
           },
           style: 'default',
         },
@@ -84,7 +71,7 @@ const MenuInicial = (props) => {
             props.navigation.dispatch(DrawerActions.toggleDrawer());
           }}
         >
-          <Entypo name='menu' size={25} />
+          <Entypo name="menu" size={25} />
         </TouchableOpacity>
       ),
       headerRight: () => (
@@ -96,7 +83,7 @@ const MenuInicial = (props) => {
           }}
           onPress={backAction}
         >
-          <AntDesign name='poweroff' size={21} />
+          <AntDesign name="poweroff" size={21} />
         </TouchableOpacity>
       ),
     });
@@ -112,15 +99,39 @@ const MenuInicial = (props) => {
   }, []);
 
   //Estructura del Drawer
-  return (
-    <Drawer.Navigator>
-      <Drawer.Screen name='Mi Cuenta' component={MiCuenta} />
-      <Drawer.Screen name='Nueva Venta' component={NuevaVenta} />
-      <Drawer.Screen name='Lugar' component={Lugar} />
-      <Drawer.Screen name='Catalogo' component={Catalogo} />
-      <Drawer.Screen name='Markets' component={Markets} />
-    </Drawer.Navigator>
-  );
+
+  if (has == '0') {
+    return (
+      <Drawer.Navigator>
+        <Drawer.Screen name="Mi Cuenta" component={MiCuenta} />
+        {/* <Drawer.Screen name="Nueva Venta" component={NuevaVenta} /> */}
+        {/* <Drawer.Screen name="Localización del market" component={Lugar} /> */}
+        {/* <Drawer.Screen name="Catalogo" component={Catalogo} /> */}
+        <Drawer.Screen name="Ingresar a market" component={Markets} />
+      </Drawer.Navigator>
+    );
+  } else {
+    if (location == '1') {
+      return (
+        <Drawer.Navigator>
+          <Drawer.Screen name="Mi Cuenta" component={MiCuenta} />
+          <Drawer.Screen name="Nueva Venta" component={NuevaVenta} />
+          <Drawer.Screen name="Localización del market" component={Lugar} />
+          <Drawer.Screen name="Catalogo" component={Catalogo} />
+          {/* <Drawer.Screen name="Market" component={Markets} /> */}
+        </Drawer.Navigator>
+      );
+    } else {
+      return (
+        <Drawer.Navigator>
+          <Drawer.Screen name="Mi Cuenta" component={MiCuenta} />
+          <Drawer.Screen name="Nueva Venta" component={NuevaVenta} />
+          <Drawer.Screen name="Catalogo" component={Catalogo} />
+          {/* <Drawer.Screen name="Market" component={Markets} /> */}
+        </Drawer.Navigator>
+      );
+    }
+  }
 };
 
 export default MenuInicial;

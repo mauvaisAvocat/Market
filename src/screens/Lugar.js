@@ -1,23 +1,25 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Alert,
   SafeAreaView,
   Text,
   TouchableOpacity,
   View,
-} from "react-native";
+} from 'react-native';
 
-import MapView, { Marker, Callout } from "react-native-maps";
-import { MaterialIcons } from "@expo/vector-icons";
+import MapView, { Marker, Callout } from 'react-native-maps';
+import { MaterialIcons } from '@expo/vector-icons';
 
 /*Librerías de ubicación en tiempo real*/
-import * as Location from "expo-location";
-import { useFocusEffect } from "@react-navigation/core";
+import * as Location from 'expo-location';
+import { useFocusEffect } from '@react-navigation/core';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Lugares = [
   {
-    nombre: "MI TIENDITA",
-    direccion: "101 Arco del Triunfo\nC.P. 76148, Querétaro\n Qro. México",
+    nombre: 'MI TIENDITA',
+    direccion: '101 Arco del Triunfo\nC.P. 76148, Querétaro\n Qro. México',
     ubicacion: {
       latitud: 20.6460549,
       longitude: -100.4105675,
@@ -26,19 +28,44 @@ const Lugares = [
 ];
 
 const Lugar = (props) => {
+  const [name, setName] = useState('');
+  const [latitude, setLatitude] = useState('');
+  const [longitude, setLongitude] = useState('');
+
+  const getStorage = async () => {
+    try {
+      console.log('------------------ Lugar -----------------');
+      const result = await AsyncStorage.getItem('@user.name_market');
+      setName(result);
+      console.log('market: ', name);
+
+      const result2 = await AsyncStorage.getItem('@user.longitude');
+      setLongitude(Number(result2));
+      console.log('longitude: ' + typeof longitude, longitude);
+
+      const result3 = await AsyncStorage.getItem('@user.latitude');
+      setLatitude(Number(result3));
+      console.log('latitude: ' + typeof latitude, latitude);
+    } catch (e) {
+      console.log('error: ', e);
+    }
+  };
+
+  getStorage();
+
   const [mostrarUbic, setMostrarUbic] = useState(false);
   const [mapa, setMapa] = useState(null);
 
-    useFocusEffect(() => {
-        props.navigation.dangerouslyGetParent().setOptions({
-            title: 'Localización',
-        });
+  useFocusEffect(() => {
+    props.navigation.dangerouslyGetParent().setOptions({
+      title: name,
+    });
   });
 
   const getUbicacion = async () => {
     try {
       const { status } = await Location.requestPermissionsAsync();
-      if (status === "granted") {
+      if (status === 'granted') {
         const location = await Location.getCurrentPositionAsync({
           accuracy: Location.Accuracy.Highest,
         });
@@ -56,7 +83,7 @@ const Lugar = (props) => {
           5000
         );
       } else {
-        Alert.alert("ERROR", "Se necesita permiso de ubicación para continuar");
+        Alert.alert('ERROR', 'Se necesita permiso de ubicación para continuar');
       }
     } catch (e) {
       console.log(e.toString());
@@ -69,12 +96,12 @@ const Lugar = (props) => {
         onPress={getUbicacion}
         style={{
           flex: 1,
-          backgroundColor: "#000",
-          alignItems: "center",
-          justifyContent: "center",
+          backgroundColor: '#000',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
-        <MaterialIcons name='location-searching' size={30} color='#fff' />
+        <MaterialIcons name="location-searching" size={30} color="#fff" />
       </TouchableOpacity>
       <MapView
         showsUserLocation
@@ -92,8 +119,8 @@ const Lugar = (props) => {
           <Marker
             key={`marker-${index}`}
             coordinate={{
-              latitude: m.ubicacion.latitud,
-              longitude: m.ubicacion.longitude,
+              latitude: Number(latitude),
+              longitude: Number(longitude),
             }}
           >
             <Callout>
@@ -104,9 +131,9 @@ const Lugar = (props) => {
                     marginBottom: 15,
                   }}
                 >
-                  {m.nombre}
+                  {name}
                 </Text>
-                <Text>{m.direccion}</Text>
+                <Text>{name}</Text>
               </View>
             </Callout>
           </Marker>
@@ -127,7 +154,7 @@ const Lugar = (props) => {
                     marginBottom: 15,
                   }}
                 >
-                  <MaterialIcons name='my-location' size={18} color='#000' /> Mi
+                  <MaterialIcons name="my-location" size={18} color="#000" /> Mi
                   ubicación
                 </Text>
                 <Text>{direccionUser}</Text>
