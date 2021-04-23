@@ -12,12 +12,19 @@ const Prueba = (props) => {
   const [relation, setRelation] = useState('');
   const [market, setMarket] = useState('');
   const [products, setProducts] = useState([]);
-  let arraySells = [];
+  const [sells, setSells] = useState();
+  const [Total, setTotal] = useState();
+  var arraySells = [];
+
+  var countSells = 0;
+  var countTotal = 0;
 
   useEffect(() => {
     (async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
       setHasPermission(status === 'granted');
+      setSells(0);
+      setTotal(0);
     })();
   }, []);
 
@@ -40,8 +47,14 @@ const Prueba = (props) => {
   getSell();
 
   const handleBarCodeScanned = async ({ type, data }) => {
+    let array = products;
+    let thisTotal = Total;
+    let thisSells = sells;
+
     setScanned(true);
-    console.log(`https://www.market-app.xyz/api/v1/products?barcode=${data}`);
+    console.log(
+      `haciendo peticion https://www.market-app.xyz/api/v1/products?barcode=${data}`
+    );
     const res = await axios.get(
       `https://www.market-app.xyz/api/v1/products?barcode=${data}`,
       {
@@ -54,66 +67,208 @@ const Prueba = (props) => {
     console.log(json);
     //alert(`Bar code with type ${type} and data ${data} has been scanned!`)
     if (json.stock > 0) {
-      Alert.alert(
-        '¡Hey!',
-        `Bar code: ${data}
-Producto: ${json.name}
-Precio: ${json.price}`,
-        [
-          {
-            text: 'Cancelar',
-            onPress: () => {
-              setScanned(false);
+      if (countTotal == 0) {
+        Alert.alert(
+          '¡Hey!',
+          `
+        
+        Bar code: ${data}
+        Producto: ${json.name}
+        Precio: ${json.price}`,
+          [
+            {
+              text: 'Cancelar',
+              onPress: () => {
+                setScanned(false);
+              },
             },
-          },
-          {
-            text: 'Finalizar venta',
-            onPress: async () => {
-              try {
-                arraySells.push({
-                  quant: 1,
-                  product_id: json.id,
-                });
-                setProducts(arraySells);
-                console.log(json);
-                console.log(arraySells);
-                console.log('relation_id: ', market);
+            {
+              text: 'Agregar a la venta',
+              onPress: async () => {
+                try {
+                  array.push({
+                    quant: 1,
+                    product_id: json.id,
+                  });
 
-                const res = await axios.post(
-                  'https://www.market-app.xyz/api/v1/sell',
-                  {
-                    sells: arraySells,
-                    relation_id: market,
-                  }
-                );
-                if (res.status == 200) {
-                  Alert.alert(
-                    'Venta confirmada',
-                    'Venta confirmada, continua vendiendo',
-                    [
-                      {
-                        text: 'aceptar',
-                        onPress: () => {
-                          setScanned(false);
-                        },
-                      },
-                    ]
+                  setProducts(array);
+                  console.log(
+                    '-----------------------------------------------------'
                   );
+                  console.log(array);
+                  console.log('relation_id: ', market);
+
+                  console.log('Res:  ---------------------------');
+                  console.log(res.data);
+
+                  console.log('Array: ------------------------------');
+                  console.log(array);
+                  setScanned(false);
+
+                  // setProducts(array);
+                } catch (e) {
+                  console.log(e);
+                  setScanned(false);
                 }
-                console.log(res.data);
-                console.log(arraySells);
-                setScanned(false);
-              } catch (e) {
-                console.log(e);
-                setScanned(false);
-              }
+              },
             },
-          },
-        ],
-        {
-          cancelable: false,
-        }
-      );
+            {
+              text: 'Finalizar venta',
+              onPress: async () => {
+                setSells(sells ? sells + 1 : 1);
+                setTotal(Total ? Total + json.price : json.price);
+
+                try {
+                  array = products;
+
+                  array.push({
+                    quant: 1,
+                    product_id: json.id,
+                  });
+
+                  setProducts(array);
+                  console.log(json);
+                  console.log(array);
+                  console.log('relation_id: ', market);
+
+                  const res = await axios.post(
+                    'https://www.market-app.xyz/api/v1/sell',
+                    {
+                      sells: array,
+                      relation_id: market,
+                    }
+                  );
+                  if (res.status == 200) {
+                    Alert.alert(
+                      'Venta confirmada',
+                      'Venta confirmada, continua vendiendo',
+                      [
+                        {
+                          text: 'aceptar',
+                          onPress: () => {
+                            setScanned(false);
+                          },
+                        },
+                      ]
+                    );
+                  }
+                  console.log(res.data);
+                  console.log(arraySells);
+                  setScanned(false);
+                } catch (e) {
+                  console.log(e);
+                  setScanned(false);
+                }
+              },
+            },
+          ],
+          {
+            cancelable: false,
+          }
+        );
+      } else {
+        countTotal += json.price;
+        countSells += 1;
+
+        Alert.alert(
+          '¡Hey!',
+          `
+        
+        Bar code: ${data}
+          Producto: ${json.name}
+          Precio: ${json.price}`,
+          [
+            {
+              text: 'Cancelar',
+              onPress: () => {
+                setScanned(false);
+              },
+            },
+            {
+              text: 'Agregar a la venta',
+              onPress: async () => {
+                try {
+                  array.push({
+                    quant: 1,
+                    product_id: json.id,
+                  });
+
+                  setProducts(array);
+                  console.log(
+                    '-----------------------------------------------------'
+                  );
+                  console.log(array);
+                  console.log('relation_id: ', market);
+
+                  console.log('Res:  ---------------------------');
+                  console.log(res.data);
+
+                  console.log('Array: ------------------------------');
+                  console.log(array);
+                  setScanned(false);
+
+                  // setProducts(array);
+                } catch (e) {
+                  console.log(e);
+                  setScanned(false);
+                }
+              },
+            },
+            {
+              text: 'Finalizar venta',
+              onPress: async () => {
+                setSells(sells ? sells + 1 : 1);
+                setTotal(Total ? Total + json.price : json.price);
+
+                try {
+                  array = products;
+
+                  array.push({
+                    quant: 1,
+                    product_id: json.id,
+                  });
+
+                  setProducts(array);
+                  console.log(json);
+                  console.log(array);
+                  console.log('relation_id: ', market);
+
+                  const res = await axios.post(
+                    'https://www.market-app.xyz/api/v1/sell',
+                    {
+                      sells: array,
+                      relation_id: market,
+                    }
+                  );
+                  if (res.status == 200) {
+                    Alert.alert(
+                      'Venta confirmada',
+                      'Venta confirmada, continua vendiendo',
+                      [
+                        {
+                          text: 'aceptar',
+                          onPress: () => {
+                            setScanned(false);
+                          },
+                        },
+                      ]
+                    );
+                  }
+                  console.log(res.data);
+                  console.log(arraySells);
+                  setScanned(false);
+                } catch (e) {
+                  console.log(e);
+                  setScanned(false);
+                }
+              },
+            },
+          ],
+          {
+            cancelable: false,
+          }
+        );
+      }
     }
 
     if (json.stock <= 0) {

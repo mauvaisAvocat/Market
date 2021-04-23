@@ -70,6 +70,9 @@ const Login = (props) => {
             AsyncStorage.setItem('@user.has_markets', '1');
             console.log('@user.has_markets: 1');
 
+            AsyncStorage.setItem('@user.uuid', json.user.markets[0].uuid);
+            console.log('@user.uuid: ', json.user.markets[0].uuid);
+
             let aNumber = '' + json.user.markets[0].relation_id;
 
             AsyncStorage.setItem(
